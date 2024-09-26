@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Reveal</title>
+    <style>
+        /* Background video remains the same */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;  /* Ensure full width */
+            height: 100%; /* Ensure full height */
+            z-index: -1;
+            object-fit: cover; /* Ensures video covers the area without zooming */
+        }
+
+        /* Bubble container */
+        .bubble-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Bubble styling */
+        .bubble {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3); /* Transparent bubbles */
+            position: absolute;
+            bottom: -150px; /* Start from below the screen */
+            color: #fff;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0px 0px 15px rgba(255, 99, 71, 0.7);
+            transition: transform 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* Burst effect on clicking */
+        .bubble.bursting {
+            animation: burst 0.6s ease forwards;
+        }
+
+        /* Animation for burst */
+        @keyframes burst {
+            to {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Floating bubbles move upwards */
+        @keyframes moveUp {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-120vh); /* Move out of the screen */
+            }
+        }
+
+        /* Prompt display box */
+        #promptDisplay {
+            position: absolute;
+            bottom: 50px;
+            font-size: 28px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(255, 0, 0, 0.7); /* Seductive red */
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
+            visibility: hidden;
+            transition: visibility 0s, opacity 0.5s linear; /* Fade effect */
+            opacity: 0; /* Start invisible */
+        }
+
+        /* Show prompt with opacity */
+        #promptDisplay.show {
+            visibility: visible;
+            opacity: 1; /* Fade in */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background video -->
+    <video id="backgroundVideo" autoplay muted loop class="bg-video">
+        <source src="https://ev-ph.rdtcdn.com/videos/202201/19/401594721/1080P_4000K_401594721.mp4?validfrom=1727322377&validto=1727329577&rate=50000k&burst=300k&hash=WT5YUHEBxHGAD4AdJ6QkrzxSQlA%3D" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <button id="unmuteButton" style="display: none;">Unmute Video</button>
+    
+    <div id="bubbleContainer" class="bubble-container"></div> <!-- Added bubble container -->
+    <div id="promptDisplay"></div> <!-- Added prompt display -->
+
+    <script>
+        const video = document.getElementById('backgroundVideo');
+        const button = document.getElementById('unmuteButton');
+        const bubbleContainer = document.getElementById('bubbleContainer');
+
+        // Show the unmute button after the video starts playing
+        video.onplaying = () => {
+            button.style.display = 'block';
+        };
+
+        // Add event listener to unmute the video when the button is clicked
+        button.addEventListener('click', () => {
+            video.muted = false; // Unmute the video
+            button.style.display = 'none'; // Hide the button
+        });
+
+        const prompts = [
+            "Just a peck!", "Makeout!", "Underwear off!", "Kiss anywhere of their choice", 
+            "Kiss anywhere of your choice", "Give a hickey", "Take a shot", "Take a body shot",
+            "Lick whipped cream off body part of their choice", "Lick whipped cream off your choice", 
+            "Go again!", "Give special kisses - 30 seconds", "Receive special kisses - 30 seconds", 
+            "Give a lapdance", "Get a lapdance", "Motorboat!", "Mouth to the ear", 
+            "Get 'handy' - 30 secs", "Do what they want, to them", "Do what you want, to them", 
+            "They do what you want, to you", "They do what they want, to you", 
+            "Blindfold them, draw again!", "You get blindfolded, they pick!", 
+            "Ice play with their nipples!", "Nothing. Their turn again!", 
+            "Kiss on their stomach", "Kiss their inner legs", "Position 69 - 30 seconds", 
+            "Get in the shower for 5 mins", "Kiss down their spine", "Please yourself - 30 seconds", 
+            "Tie them to the bed, pick again.", "Get tied to the bed, they pick.", 
+            "Break out a toy! Their choice", "Kiss on their neck for 30 secs", 
+            "Give a mouth and ice massage until it's melted", 
+            "Give a massage for 1 minute anywhere on the top half of their body", 
+            "Give a massage for 1 minute anywhere below the belt", 
+            "Remove article of clothing of their choice", "Move your tongue along their 'happy trail.'", 
+            "Get your lips super close without touching for 60 seconds. No cheating!", 
+            "Take off an article of their clothing with your mouth", 
+            "Whisper something hot in their ear", "Dry hump, you on top - 2 minutes", 
+            "Dry hump, them on top - 2 minutes", "Dry hump without kissing on the face - 2 mins", 
+            "Gently run your fingertips up and down their back", 
+            "Lightly run your lips over their chest", "Lightly run your lips over their neck/face", 
+            "Take one naughty photo of each person", "Whisper something naughty in their ear", 
+            "Use your hands on their body - 30 seconds", "Blindfold them, draw again", 
+            "Blindfold yourself, their turn", "Tie them to the bed, draw another", 
+            "Get tied to the bed, their turn", "Pinch their nipples", "Get your nipples pinched", 
+            "Spank them - 30 seconds", "Nothing. Boo!", "Kiss their stomach", 
+            "Kiss their inner thighs", "Position 69 - 30 seconds", "Kiss down their spine", 
+            "Give a 1-minute massage above the belt", "Give a 1-minute massage below the belt", 
+            "Get your lips super close without touching - 30 seconds", 
+            "Run your fingertips gently across their butt", 
+            "Lightly run your lips over a body part above the waist", 
+            "Lightly run your lips over a body part below the waist", 
+            "Tie them up and tease them - 2 minutes", "Get tied up and teased - 2 minutes"
+        ];
+
+        // Function to create a new bubble
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            
+            // Random horizontal position
+            bubble.style.left = `${Math.random() * 90}vw`;
+            bubble.style.animation = `moveUp ${Math.random() * 3 + 5}s linear infinite`;
+            bubble.innerText = '?';
+
+            // Event listener for bubble click
+            bubble.addEventListener('click', function() {
+                burstBubble(bubble);
+            });
+
+            bubbleContainer.appendChild(bubble);
+
+            // Remove the bubble when it reaches the top
+            bubble.addEventListener('animationend', function() {
+                bubble.remove();
+            });
+        }
+
+        // Function to handle bubble burst
+        function burstBubble(bubble) {
+            bubble.classList.add('bursting'); // Add burst class
+            bubble.style.pointerEvents = 'none'; // Prevent further clicks
+            
+            // Display random prompt immediately
+            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+            const promptDisplay = document.getElementById("promptDisplay");
+            promptDisplay.innerText = randomPrompt;
+
+            // Show the prompt with fade effect
+            promptDisplay.classList.add('show'); // 
+
+            // Remove bubble immediately
+            bubble.remove();
+
+            // Hide the prompt after a few seconds
+            setTimeout(() => {
+                promptDisplay.classList.remove('show');
+            }, 3500); // Adjust duration as needed
+        }
+
+        // Create a new bubble every 2 seconds
+        setInterval(createBubble, 2000);
+    </script>
+
+</body>
+</html>
