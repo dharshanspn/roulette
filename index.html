@@ -98,19 +98,19 @@
 
     <!-- Background video -->
     <video id="backgroundVideo" autoplay muted loop class="bg-video">
-        <source src="1.MP4" type="video/mp4">
+        <source src="https://ev-ph.rdtcdn.com/videos/202201/19/401594721/1080P_4000K_401594721.mp4?validfrom=1727322377&validto=1727329577&rate=50000k&burst=300k&hash=WT5YUHEBxHGAD4AdJ6QkrzxSQlA%3D" type="video/mp4">
         Your browser does not support the video tag.
     </video>
     
     <button id="unmuteButton" style="display: none;">Unmute Video</button>
     
-    <div id="bubbleContainer" class="bubble-container"></div> <!-- Added bubble container -->
-    <div id="promptDisplay"></div> <!-- Added prompt display -->
+    <div class="bubble-container" id="bubbleContainer"></div> <!-- Added bubble container -->
+    
+    <div id="promptDisplay"></div> <!-- Prompt display for messages -->
 
     <script>
         const video = document.getElementById('backgroundVideo');
         const button = document.getElementById('unmuteButton');
-        const bubbleContainer = document.getElementById('bubbleContainer');
 
         // Show the unmute button after the video starts playing
         video.onplaying = () => {
@@ -122,6 +122,7 @@
             video.muted = false; // Unmute the video
             button.style.display = 'none'; // Hide the button
         });
+
 
         const prompts = [
             "Naked wrestling. Loser tied up",
