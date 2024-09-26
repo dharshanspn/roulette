@@ -97,31 +97,19 @@
 <body>
 
     <!-- Background video -->
-    <video id="backgroundVideo" autoplay muted loop class="bg-video">
-        <source src="https://de14.seedr.cc/ff_get/5514254430/bellesahouse.21.04.07.gianna.dior.gianna.and.ryan.mp4?st=KeNSop1QhKQHRUBFmv80fQ&e=1727423767" type="video/mp4">
+    <video autoplay muted loop class="bg-video">
+        <source src="https://de14.seedr.cc/ff_get/5514254430/bellesahouse.21.04.07.gianna.dior.gianna.and.ryan.mp4?st=mizUBazewTTb_L8YRE6lHw&e=1727424046" type="video/mp4">
         Your browser does not support the video tag.
     </video>
-    
-    <button id="unmuteButton" style="display: none;">Unmute Video</button>
-    
-    <div class="bubble-container" id="bubbleContainer"></div> <!-- Added bubble container -->
-    
-    <div id="promptDisplay"></div> <!-- Prompt display for messages -->
 
+    <!-- Container for bubbles -->
+    <div class="bubble-container" id="bubbleContainer"></div>
+
+    <!-- Prompt display section -->
+    <p id="promptDisplay"></p>
+
+    <!-- JavaScript for bubble movement and prompt functionality -->
     <script>
-        const video = document.getElementById('backgroundVideo');
-        const button = document.getElementById('unmuteButton');
-
-        // Show the unmute button after the video starts playing
-        video.onplaying = () => {
-            button.style.display = 'block';
-        };
-
-        // Add event listener to unmute the video when the button is clicked
-        button.addEventListener('click', () => {
-            video.muted = false; // Unmute the video
-            button.style.display = 'none'; // Hide the button
-        });
 
 
         const prompts = [
@@ -168,12 +156,13 @@
 
         // Function to create a new bubble
         function createBubble() {
+            const bubbleContainer = document.getElementById('bubbleContainer');
             const bubble = document.createElement('div');
             bubble.classList.add('bubble');
             
             // Random horizontal position
             bubble.style.left = `${Math.random() * 90}vw`;
-            bubble.style.animation = `moveUp ${Math.random() * 3 + 4}s linear infinite`;
+            bubble.style.animation = `moveUp ${Math.random() * 3 + 5}s linear infinite`;
             bubble.innerText = '?';
 
             // Event listener for bubble click
@@ -200,7 +189,7 @@
             promptDisplay.innerText = randomPrompt;
 
             // Show the prompt with fade effect
-            promptDisplay.classList.add('show'); // 
+            promptDisplay.classList.add('show'); // Add show class
 
             // Remove bubble immediately
             bubble.remove();
@@ -208,9 +197,10 @@
             // Hide the prompt after a few seconds
             setTimeout(() => {
                 promptDisplay.classList.remove('show');
-            }, 3500); // Adjust duration as needed
+            }, 3000); // Adjust duration as needed
         }
 
+        // Create a new bubble every 2 seconds
         // Create a new bubble every 2 seconds
         setInterval(createBubble, 2000);
     </script>
