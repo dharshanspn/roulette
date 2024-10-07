@@ -1,209 +1,155 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bubble Reveal</title>
-    <style>
-        /* Background video remains the same */
-        body, html {
-            height: 100%;
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-        }
 
-        .bg-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;  /* Ensure full width */
-            height: 100%; /* Ensure full height */
-            z-index: -1;
-            object-fit: cover; /* Ensures video covers the area without zooming */
-        }
+//Variables
+let mobile_media_query = window.matchMedia("(max-width: 400px)");
+let tablet_media_query = window.matchMedia(
+  "(min-width: 400px) and (max-width: 600px)"
+);
+const notes = document.querySelectorAll(".js-note");
 
-        /* Bubble container */
-        .bubble-container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-        }
+//-> Function that resets the size of the notes.
+function recize_notes() {
+  for (let i = 0; i < notes.length; i++) {
+    if (notes[i].classList.contains("active")) {
+      notes[i].classList.remove("active");
+      gsap.set(notes[i], {
+        height: "30%",
+        clearProps: "all"
+      });
+    }
+  }
+}
 
-        /* Bubble styling */
-        .bubble {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3); /* Transparent bubbles */
-            position: absolute;
-            bottom: -150px; /* Start from below the screen */
-            color: #fff;
-            font-size: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0px 0px 15px rgba(255, 99, 71, 0.7);
-            transition: transform 0.3s ease, background 0.3s ease;
-            cursor: pointer;
-        }
+//-> Main function that enables all the notes.
+function notes_ready() {
+  gsap.to(".js-envelop-content", {
+    height: "110%",
+    duration: 0.5
+  });
 
-        /* Burst effect on clicking */
-        .bubble.bursting {
-            animation: burst 0.6s ease forwards;
-        }
-
-        /* Animation for burst */
-        @keyframes burst {
-            to {
-                transform: scale(1.5);
-                opacity: 0;
+  for (let i = 0; i < notes.length; i++) {
+    notes[i].addEventListener("click", function () {
+      if (mobile_media_query.matches) {
+        if (this.classList.contains("active")) {
+          this.classList.remove("active");
+          gsap.set(this, {
+            height: "30%",
+            clearProps: "all"
+          });
+        } else {
+          for (let i = 0; i < notes.length; i++) {
+            if (notes[i].classList.contains("active")) {
+              notes[i].classList.remove("active");
+              gsap.set(notes[i], {
+                height: "30%",
+                clearProps: "all"
+              });
             }
+          }
+          this.classList.add("active");
+          gsap.set(this, {
+            height: 125 + 40 * i + "%"
+          });
         }
-
-        /* Floating bubbles move upwards */
-        @keyframes moveUp {
-            from {
-                transform: translateY(0);
+      } else if (tablet_media_query.matches) {
+        if (this.classList.contains("active")) {
+          this.classList.remove("active");
+          gsap.set(this, {
+            height: "30%",
+            clearProps: "all"
+          });
+        } else {
+          for (let i = 0; i < notes.length; i++) {
+            if (notes[i].classList.contains("active")) {
+              notes[i].classList.remove("active");
+              gsap.set(notes[i], {
+                height: "30%",
+                clearProps: "all"
+              });
             }
-            to {
-                transform: translateY(-120vh); /* Move out of the screen */
+          }
+          this.classList.add("active");
+          gsap.set(this, {
+            height: 80 + 21 * i + "%"
+          });
+        }
+      } else {
+        if (this.classList.contains("active")) {
+          this.classList.remove("active");
+          gsap.set(this, {
+            height: "30%",
+            clearProps: "all"
+          });
+        } else {
+          for (let i = 0; i < notes.length; i++) {
+            if (notes[i].classList.contains("active")) {
+              notes[i].classList.remove("active");
+              gsap.set(notes[i], {
+                height: "30%",
+                clearProps: "all"
+              });
             }
+          }
+          this.classList.add("active");
+          gsap.set(this, {
+            height: 70 + 20 * i + "%"
+          });
         }
+      }
+    });
+  }
+}
 
-        /* Prompt display box */
-        #promptDisplay {
-            position: absolute;
-            bottom: 50px;
-            font-size: 28px;
-            font-weight: 600;
-            color: #fff;
-            background: rgba(255, 0, 0, 0.7); /* Seductive red */
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
-            visibility: hidden;
-            transition: visibility 0s, opacity 0.5s linear; /* Fade effect */
-            opacity: 0; /* Start invisible */
-        }
+//-> Function that set up the up paper of the envelope.
+function set_up_paper() {
+  var arr = [0, 0, 100, 0, 50, 61];
+  gsap.set(".js-up-paper", {
+    bottom: "97%",
+    rotation: 180,
+    zIndex: 200,
+    clipPath:
+      "polygon(" +
+      arr[0] +
+      "%" +
+      arr[1] +
+      "%," +
+      arr[2] +
+      "%" +
+      arr[3] +
+      "%," +
+      arr[4] +
+      "%" +
+      arr[5] +
+      "%)",
+    onComplete: notes_ready
+  });
+}
 
-        /* Show prompt with opacity */
-        #promptDisplay.show {
-            visibility: visible;
-            opacity: 1; /* Fade in */
-        }
-    </style>
-</head>
-<body>
+//-> Function that starts the up paper transition.
+function envelop_transition() {
+  gsap.to(".js-up-paper", {
+    bottom: "1%",
+    duration: 0.25,
+    onComplete: set_up_paper
+  });
+  document
+    .querySelector(".js-up-paper")
+    .removeEventListener("click", envelop_transition);
+  document.querySelector(".js-up-paper").classList.remove("cursor");
+}
 
-    <!-- Background video -->
-    <video autoplay muted loop class="bg-video">
-        <source src="https://de14.seedr.cc/ff_get/5514254430/bellesahouse.21.04.07.gianna.dior.gianna.and.ryan.mp4?st=mizUBazewTTb_L8YRE6lHw&e=1727424046" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+//-> Function that allows cut the sticker.
+function sticker() {
+  gsap.set(".js-sticker", { width: "20%", left: "-80%" });
+  document.body.classList.remove("scissors");
+  document.querySelector(".js-sticker").removeEventListener("click", sticker);
+  document
+    .querySelector(".js-up-paper")
+    .addEventListener("click", envelop_transition);
+  document.querySelector(".js-up-paper").classList.add("cursor");
+}
 
-    <!-- Container for bubbles -->
-    <div class="bubble-container" id="bubbleContainer"></div>
+document.querySelector(".js-sticker").addEventListener("click", sticker);
 
-    <!-- Prompt display section -->
-    <p id="promptDisplay"></p>
-
-    <!-- JavaScript for bubble movement and prompt functionality -->
-    <script>
-
-
-        const prompts = [
-            "Naked wrestling. Loser tied up",
-            "Shower sex",
-            "Doggie style",
-            "Makeout!",
-            "Underwear off!",
-            "Kiss anywhere of their choice",
-            "Kiss anywhere of your choice",
-            "Give a hickey",
-            "Give special kisses - 30 seconds",
-            "Receive special kisses - 30 seconds",
-            "Motorboat, you SOB",
-            "Get 'handy' on them - 30 secs",
-            "Do what they want, to them",
-            "Do what you want, to them",
-            "They do what you want, to you",
-            "They do what they want, to you",
-            "Kiss on their stomach",
-            "Kiss the inner legs",
-            "Get in the shower for 5 mins",
-            "Kiss down their spine",
-            "Kiss on their neck for 30 secs",
-            "Give a massage for 1 minute anywhere on the top half of their body",
-            "Give a massage for 1 minute anywhere below the belt",
-            "Remove article of clothing of their choice",
-            "Dry hump, you on top - 2 minutes",
-            "Dry hump, them on top - 2 minutes",
-            "Lightly run your lips over their chest",
-            "Lightly run your lips over their neck/face",
-            "Take one naughty photo of each person",
-            "Whisper something naughty in their ear",
-            "Use your hands on their body - 30 seconds",
-            "Pinch their nipples",
-            "Get your nipples pinched",
-            "Spank them - 30 seconds",
-            "Kiss their stomach",
-            "Kiss their inner thighs",
-            "Run your fingertips gently across their butt",
-            "Lightly run your lips over a body part above the waist",
-            "Lightly run your lips over a body part below the waist"
-        ];
-
-        // Function to create a new bubble
-        function createBubble() {
-            const bubbleContainer = document.getElementById('bubbleContainer');
-            const bubble = document.createElement('div');
-            bubble.classList.add('bubble');
-            
-            // Random horizontal position
-            bubble.style.left = `${Math.random() * 90}vw`;
-            bubble.style.animation = `moveUp ${Math.random() * 3 + 5}s linear infinite`;
-            bubble.innerText = '?';
-
-            // Event listener for bubble click
-            bubble.addEventListener('click', function() {
-                burstBubble(bubble);
-            });
-
-            bubbleContainer.appendChild(bubble);
-
-            // Remove the bubble when it reaches the top
-            bubble.addEventListener('animationend', function() {
-                bubble.remove();
-            });
-        }
-
-        // Function to handle bubble burst
-        function burstBubble(bubble) {
-            bubble.classList.add('bursting'); // Add burst class
-            bubble.style.pointerEvents = 'none'; // Prevent further clicks
-            
-            // Display random prompt immediately
-            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
-            const promptDisplay = document.getElementById("promptDisplay");
-            promptDisplay.innerText = randomPrompt;
-
-            // Show the prompt with fade effect
-            promptDisplay.classList.add('show'); // Add show class
-
-            // Remove bubble immediately
-            bubble.remove();
-
-            // Hide the prompt after a few seconds
-            setTimeout(() => {
-                promptDisplay.classList.remove('show');
-            }, 3000); // Adjust duration as needed
-        }
-
-        // Create a new bubble every 2 seconds
-        // Create a new bubble every 2 seconds
-        setInterval(createBubble, 2000);
-    </script>
-
-</body>
-</html>
+window.onresize = function (event) {
+  recize_notes();
+};
